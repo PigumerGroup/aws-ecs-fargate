@@ -1,0 +1,85 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  Image:
+    Type: String
+Resources:
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - "ecs-tasks.amazonaws.com"
+          Action:
+          - "sts:AssumeRole"
+      Path: /
+      Policies:
+      - PolicyName: ecsTaskExecutionRolePolicy
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+              - 'ecr:GetAuthorizationToken'
+              - 'ecr:BatchCheckLayerAvailability'
+              - 'ecr:GetDownloadUrlForLayer'
+              - 'ecr:BatchGetImage'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+            Resource: '*'
+  Log:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: '/aws/ecs/http'
+  Task:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+      - Name: 'http'
+        Environment:
+        - Name: 'JAVA_OPTS'
+          Value:
+            Fn::Join:
+            - ' '
+            - - '-Djava.rmi.server.hostname=127.0.0.1'
+              - '-Dcom.sun.management.jmxremote=true'
+              - '-Dcom.sun.management.jmxremote.port=9010'
+              - '-Dcom.sun.management.jmxremote.rmi.port=9010'
+              - '-Dcom.sun.management.jmxremote.ssl=false'
+              - '-Dcom.sun.management.jmxremote.authenticate=false'
+              - '-Dcom.sun.management.jmxremote.local.only=false'
+        Image: !Ref 'Image'
+        LogConfiguration:
+          LogDriver: 'awslogs'
+          Options:
+            awslogs-group: !Ref Log
+            awslogs-region: !Ref AWS::Region
+            awslogs-stream-prefix: "aws-ecs"
+        MemoryReservation: 512
+        PortMappings:
+        - ContainerPort: 8080
+        - ContainerPort: 9010
+      Cpu: 256
+      ExecutionRoleArn:
+        Fn::GetAtt:
+        - ECSTaskExecutionRole
+        - Arn
+      Family: http
+      Memory: 512
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !ImportValue ECSCluster
+      DesiredCount: 1
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets:
+          - !ImportValue subnet1
+          - !ImportValue subnet2
+      TaskDefinition: !Ref Task

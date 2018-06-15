@@ -36,7 +36,7 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       ContainerDefinitions:
-      - Name: 'http'
+      - Name: http
         Environment:
         - Name: 'JAVA_OPTS'
           Value:
@@ -76,9 +76,15 @@ Resources:
       Cluster: !ImportValue ECSCluster
       DesiredCount: 1
       LaunchType: FARGATE
+      LoadBalancers:
+      - ContainerName: http
+        ContainerPort: 8080
+        TargetGroupArn: !ImportValue targetgroup
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
+          SecurityGroups:
+          - !ImportValue securitygroup
           Subnets:
           - !ImportValue subnet1
           - !ImportValue subnet2

@@ -1,7 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Resources:
   ECR:
-    Type: "AWS::ECR::Repository"
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: http
 Outputs:
   ECR:
     Value: !Ref ECR

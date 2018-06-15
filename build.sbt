@@ -31,6 +31,14 @@ lazy val root = (project in file("."))
     )
   ).settings(
     awscfStacks := Stacks(
+      Alias("vpc") → CloudformationStack(
+        stackName = "vpc",
+        template = "vpc.yaml"
+      ),
+      Alias("alb") → CloudformationStack(
+        stackName = "alb",
+        template = "alb.yaml"
+      ),
       Alias("ecr") → CloudformationStack(
         stackName = "ecr",
         template = "ecr.yaml"
@@ -39,15 +47,11 @@ lazy val root = (project in file("."))
         stackName = "ecscluster",
         template = "ecscluster.yaml"
       ),
-      Alias("vpc") → CloudformationStack(
-        stackName = "vpc",
-        template = "vpc.yaml"
-      ),
       Alias("http") → CloudformationStack(
         stackName = "http",
         template = "http.yaml",
         parameters = Map(
-          "Image" → s"${(awsecrDomain in awsecr).value}/${awscfGetValue.toTask(" ECR").value}:${version.value}"
+          "Image" → s"${(awsecrDomain in awsecr).value}/http:${version.value}"
         ),
         capabilities = Seq("CAPABILITY_IAM")
       )

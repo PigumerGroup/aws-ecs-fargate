@@ -13,11 +13,16 @@ sbt> awscfCreateStack ecr
 sbt> awscfCreateStack ecscluster
 ```
 
-# Build and push
+# Build
 
 ```
 sbt> docker:stage
 sbt> docker:publishLocal
+```
+
+# Push to repository
+
+```
 sbt> awsecr::awsecrLogin
 sbt> awsecrPush
 ```

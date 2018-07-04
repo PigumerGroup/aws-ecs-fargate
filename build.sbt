@@ -3,7 +3,7 @@ import sbt.Keys._
 import jp.pigumer.sbt.cloud.aws.cloudformation._
 import jp.pigumer.sbt.cloud.aws.ecr.AwsecrCommands
 
-val Region = "us-east-1"
+val Region = "ap-northeast-1"
 val BucketName = sys.env.get("BUCKET_NAME") // YOUR BUCKET NAME
 
 val awsecrPush = taskKey[Unit]("Push")
@@ -20,7 +20,7 @@ lazy val root = (project in file("."))
       akkaStream
     )
   ).settings(
-    dockerBaseImage := "java:8-jdk-alpine",
+    dockerBaseImage := "openjdk:8-jre-alpine",
     dockerExposedPorts := Seq(8080, 9010),
     mainClass in assembly := Some("com.pigumer.http.HelloWorld")
   ).settings(

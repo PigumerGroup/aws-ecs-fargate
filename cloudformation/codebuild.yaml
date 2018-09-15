@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  Location:
+    Type: String
+Resources:
+  CodeBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Location: !Ref Location
+        Name: aws-ecs-fargate.zip
+        NamespaceType: NONE
+        Packaging: ZIP
+        Path: target
+        Type: S3
+      BadgeEnabled: true
+      Description: aws-ecs-fargate
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: pigumergroup/docker-sbt
+        EnvironmentVariables:
+        - Name: BUCKET_NAME
+          Value: !Ref Location
+        PrivilegedMode: true
+        Type: LINUX_CONTAINER
+      Name: aws-ecs-fargate
+      ServiceRole: !Sub arn:aws:iam::${AWS::AccountId}:role/CodeBuildRole
+      Source:
+        Auth:
+          Type: OAUTH
+        GitCloneDepth: 1
+        Location: https://github.com/PigumerGroup/aws-ecs-fargate.git
+        ReportBuildStatus: true
+        Type: GITHUB

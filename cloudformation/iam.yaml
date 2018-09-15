@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - 'codebuild.amazonaws.com'
+          Action: 'sts:AssumeRole'
+      RoleName: CodeBuildRole
+  CodeBuildPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: "Allow"
+          Action:
+          - "codebuild:*"
+          - "iam:PassRole"
+          - "logs:FilterLogEvents"
+          - "logs:GetLogEvents"
+          - "s3:CreateBucket"
+          - "s3:GetObject"
+          - "s3:List*"
+          - "s3:PutObject"
+          Resource: "*"
+      PolicyName: CodeBuildPolicy
+      Roles:
+      - !Ref CodeBuildRole

@@ -31,24 +31,36 @@ lazy val root = (project in file("."))
     )
   ).settings(
     awscfStacks := Stacks(
+      Alias("iam") → CloudformationStack(
+        stackName = "aws-ecs-fargate-iam",
+        template = "iam.yaml",
+        capabilities = Seq("CAPABILITY_NAMED_IAM")
+      ),
+      Alias("codebuild") → CloudformationStack(
+        stackName = "aws-ecs-fargate-codebuild",
+        template = "codebuild.yaml",
+        parameters = Map(
+          "Location" → BucketName.get
+        )
+      ),
       Alias("vpc") → CloudformationStack(
-        stackName = "vpc",
+        stackName = "aws-ecs-fargate-vpc",
         template = "vpc.yaml"
       ),
       Alias("alb") → CloudformationStack(
-        stackName = "alb",
+        stackName = "aws-ecs-fargate-alb",
         template = "alb.yaml"
       ),
       Alias("ecr") → CloudformationStack(
-        stackName = "ecr",
+        stackName = "aws-ecs-fargate-ecr",
         template = "ecr.yaml"
       ),
       Alias("ecscluster") → CloudformationStack(
-        stackName = "ecscluster",
+        stackName = "aws-ecs-fargate-ecscluster",
         template = "ecscluster.yaml"
       ),
       Alias("http") → CloudformationStack(
-        stackName = "http",
+        stackName = "aws-ecs-fargate-http",
         template = "http.yaml",
         parameters = Map(
           "Image" → s"${(awsecrDomain in awsecr).value}/http:${version.value}"

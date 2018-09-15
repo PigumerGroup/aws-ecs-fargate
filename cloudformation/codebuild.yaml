@@ -14,6 +14,9 @@ Resources:
         Path: target
         Type: S3
       BadgeEnabled: true
+      Cache:
+        Location: !Sub ${Location}/ivy2
+        Type: S3
       Description: aws-ecs-fargate
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL

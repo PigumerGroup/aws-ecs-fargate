@@ -10,10 +10,10 @@ $ BUCKET_NAME=<YOUR BUCKET NAME> sbt
 sbt> awscfCreateBucket create-bucket-stackname
 sbt> awscfUploadTemplates
 sbt> awscfCreateStack iam
+sbt> awscfCreateStack ecr
 sbt> awscfCreateStack codebuild
 sbt> awscfCreateStack vpc
 sbt> awscfCreateStack alb 
-sbt> awscfCreateStack ecr
 sbt> awscfCreateStack ecscluster
 ```
 
